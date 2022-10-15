@@ -1,0 +1,5 @@
+authentication/private/:issuer/:encoded-identifier
+signature/private/:issuer/:encoded-identifier
+
+Improve quality of tests
+Make benchmarks

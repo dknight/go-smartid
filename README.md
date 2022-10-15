@@ -1,13 +1,15 @@
-# Intro
-
 ![Smart-ID in Go language](https://github.com/dknight/go-smartid/blob/main/files/smartid-gopher.png?raw=true)
 
-Package smartid implements an imple interface in Go to work with the
+# Intro
+
+Package smartid implements an interface in Go to work with the
 Smart-ID API (https:www.smart-id.com). Smart-ID is used to easily and
 safely authenticate and sign documents online using only a smart phone.
 Smart-ID is a popular method in the Baltic countries of Estonia, Latvia,
 and Lithuania for authenticating and signing documents online for banks,
 social media, government offices, and other institutions.
+
+Official Smart-ID [technical documentations](https://github.com/SK-EID/smart-id-documentation/wiki).
 
 ## Installation
 
@@ -152,4 +154,4 @@ hesitate and make pull request or issue.
 
 ## License 
 
-MIT (2022)
+MIT 2022
