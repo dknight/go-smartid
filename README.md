@@ -22,7 +22,7 @@ go get github.com/dknight/go-smartid
 The bare minimum required to make an authentication request. Demonstarates
 synchronous way.
 
-For more examples [see full docs](http://missing-yet).
+For more examples [see full docs](https://pkg.go.dev/github.com/dknight/go-smartid).
 
 ```go
 semid := NewSemanticIdentifier(IdentifierTypePNO, CountryEE, "30303039914")
