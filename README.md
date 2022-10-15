@@ -1,6 +1,6 @@
 # Intro
 
-![Smart-ID in Go language](https://github.com/dknight/go-smartid/files/smartid-gopher.png?raw=true)
+![Smart-ID in Go language](https://github.com/dknight/go-smartid/blob/main/files/smartid-gopher.png?raw=true)
 
 Package smartid implements an imple interface in Go to work with the
 Smart-ID API (https:www.smart-id.com). Smart-ID is used to easily and
