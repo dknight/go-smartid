@@ -85,7 +85,7 @@
 //			},
 //			{
 //				Type:          InteractionDisplayTextAndPIN,
-//				DisplayText60: "Welcome to Smart-ID!",
+//				DisplayText200: "Welcome to Smart-ID! A bit longer text."
 //			},
 //		},
 //	}
