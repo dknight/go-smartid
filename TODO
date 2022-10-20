@@ -1,5 +1,7 @@
 authentication/private/:issuer/:encoded-identifier
 signature/private/:issuer/:encoded-identifier
 
+Rework error handling
 Improve quality of tests
 Make benchmarks
+
