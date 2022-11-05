@@ -24,7 +24,7 @@ synchronous way.
 
 For more examples [see full docs](https://pkg.go.dev/github.com/dknight/go-smartid).
 
-# Sync request
+### Sync request
 
 ```go
 semid := NewSemanticIdentifier(IdentifierTypePNO, CountryEE, "30303039914")
@@ -151,7 +151,7 @@ from response, verify and parse it in own way `response.Cert.GetX509Cert()`.
 
 ## Contribution
 
-Any help is appreciated. Found a bug, typo, inaccuracy, etc. Please do not 
+Any help is appreciated. Found a bug, typo, inaccuracy, etc.? Please do not 
 hesitate and make pull request or issue.
 
 ## License 
