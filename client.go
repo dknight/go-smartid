@@ -78,7 +78,7 @@ func (c *Client) Sign(req *AuthRequest) chan *SessionResponse {
 
 // SignSync does signing in synchronous way. SignSync is very similar to
 // AuthenticateSync, but uses other endpoint.
-func (c *Client) SignSync(req *AuthRequest) (*SessionResponse, error) {
+func (c *Client) SignSync(req *AuthRequest) (*SessionResponse, *ResponseError) {
 	req.endpoint = EndpointSignature
 	return c.AuthenticateSync(req)
 }
@@ -134,12 +134,12 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, *Response
 	payload, err := json.Marshal(req)
 	if err != nil {
 		errMsg := fmt.Sprintf("Cannot encode JSON %+v", req)
-		return nil, &ResponseError{interalResponseError, errMsg}
+		return nil, &ResponseError{internalResponseError, errMsg}
 	}
 
 	httpResp, err := makeHTTPRequest(http.MethodPost, url, payload)
 	if err != nilerror {
-		return nil, &ResponseError{interalResponseError, "Cannot process HTTP request"}
+		return nil, &ResponseError{internalResponseError, "Cannot process HTTP request"}
 	}
 
 	resp := AuthResponse{
@@ -155,12 +155,12 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, *Response
 
 	body, err := getHTTPResponseBody(httpResp)
 	if err != nilerror {
-		return nil, &ResponseError{interalResponseError, "Cannot parse body"}
+		return nil, &ResponseError{internalResponseError, "Cannot parse body"}
 	}
 
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
-		return nil, &ResponseError{interalResponseError, "Cannot parse JSON"}
+		return nil, &ResponseError{internalResponseError, "Cannot parse JSON"}
 	}
 	return &resp, nil
 }
@@ -195,7 +195,7 @@ func (c *Client) getSessionResponse(req *SessionRequest, s Session) (*SessionRes
 
 	errJSON := json.Unmarshal(body, &resp)
 	if errJSON != nil {
-		return nil, &ResponseError{interalResponseError, err.Error()}
+		return nil, &ResponseError{internalResponseError, err.Error()}
 	}
 
 	if resp.IsCompleted() && resp.IsFailed() {
@@ -213,7 +213,7 @@ func (c *Client) getSessionResponse(req *SessionRequest, s Session) (*SessionRes
 func getHTTPResponseBody(r *http.Response) ([]byte, *ResponseError) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return nil, &ResponseError{interalResponseError, err.Error()}
+		return nil, &ResponseError{internalResponseError, err.Error()}
 	}
 	defer r.Body.Close()
 	return body, nil
@@ -225,7 +225,7 @@ func makeHTTPRequest(mthd, url string, payld []byte) (*http.Response, *ResponseE
 	reader := bytes.NewReader(payld)
 	httpReq, err := http.NewRequest(mthd, url, reader)
 	if err != nil {
-		return nil, &ResponseError{interalResponseError, "HTTP Protocol error"}
+		return nil, &ResponseError{internalResponseError, "HTTP Protocol error"}
 	}
 	cLen := strconv.Itoa(len(payld))
 	httpReq.Header.Add("Content-Type", "application/json")
@@ -233,7 +233,7 @@ func makeHTTPRequest(mthd, url string, payld []byte) (*http.Response, *ResponseE
 
 	resp, err := httpClient.Do(httpReq)
 	if err != nil {
-		return nil, &ResponseError{interalResponseError, err.Error()}
+		return nil, &ResponseError{internalResponseError, err.Error()}
 	}
 	return resp, nil
 }

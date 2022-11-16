@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-const interalResponseError = -1
+const internalResponseError = -1
 
 // Response is a basic response structure that holds code (usually HTTP
 // status) and a message (usually HTTP status text). It is typically only
