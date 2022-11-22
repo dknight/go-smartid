@@ -41,14 +41,3 @@ func TestSemanticIdentifier_String(t *testing.T) {
 		}
 	}
 }
-
-func BenchmarkSemanticIdentifier_String(b *testing.B) {
-	id := SemanticIdentifier{
-		Type:    IdentifierTypePNO,
-		Country: CountryEE,
-		ID:      "30303039914",
-	}
-	for i := 0; i < b.N; i++ {
-		id.String()
-	}
-}
