@@ -38,7 +38,7 @@ func NewClient(url string, poll uint32) *Client {
 
 // Authenticate does authentication in asynchronous way using channel.
 func (c *Client) Authenticate(req *AuthRequest) chan *SessionResponse {
-	ch := make(chan *SessionResponse, 1)
+	ch := make(chan *SessionResponse)
 	go func() {
 		resp, err := c.AuthenticateSync(req)
 		if err != nil {
