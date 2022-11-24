@@ -52,11 +52,11 @@ if _, err := resp.Validate(); err != nil {
 
 // It is also good to verify the certificate over secure. But it isn't
 // mandatory, but strongly recommended.
-// 
+//
 // If you always get an error: x509: certificate signed by unknown
 // authority. Most probably you need install ca-certificates for
 // example for GNU Linux.
-// 
+//
 // sudo apt-get install ca-certificates
 // sudo dnf install ca-certificates
 certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
@@ -147,13 +147,22 @@ For more examples [see docs](http://missing-yet).
 1. `:private/` endpoint.
 2. Better certificated parsing and data extraction. You can get certificated
 from response, verify and parse it in own way `response.Cert.GetX509Cert()`.
-3. Smart-ID version V1.0 is not supported, only V2.0.
+3. Smart-ID API version v1.0 is not supported, only v2.0.
+
+## Testing
+
+SK test envirnoment is not always online and sometimes errors might give HTTP
+error 500, 503, etc.
+
+```go
+go test
+```
 
 ## Contribution
 
-Any help is appreciated. Found a bug, typo, inaccuracy, etc.? Please do not 
+Any help is appreciated. Found a bug, typo, inaccuracy, etc.? Please do not
 hesitate and make pull request or issue.
 
-## License 
+## License
 
 MIT 2022

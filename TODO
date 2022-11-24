@@ -4,4 +4,3 @@ signature/private/:issuer/:encoded-identifier
 Rework error handling
 Improve quality of tests
 Make benchmarks
-
