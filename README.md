@@ -151,8 +151,13 @@ from response, verify and parse it in own way `response.Cert.GetX509Cert()`.
 
 ## Testing
 
-SK test envirnoment is not always online and sometimes errors might give HTTP
-error 500, 503, etc.
+SK test environment **is very unstable**. Possible technical problems might be:
+
+1. Problems with service availability. Doesn't work too often.
+2. They change test data without any warning.
+3. Problems with certificates.
+4. Problems with performance requests can last very long time, sometimes
+408 Timeout will be given as response.
 
 ```go
 go test
