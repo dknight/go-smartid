@@ -3,6 +3,7 @@ package smartid
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,8 +12,6 @@ import (
 
 const pollDown = 1000
 const pollUp = 120000
-
-var nilerror *ResponseError
 
 // Client is used to interact with endpoints and make requests and receive,
 // responses.
@@ -44,8 +43,8 @@ func (c *Client) Authenticate(req *AuthRequest) chan *SessionResponse {
 		if err != nil {
 			ch <- &SessionResponse{
 				Response: Response{
-					Code:    err.Code,
-					Message: err.Message,
+					Code:    err.(*SmartIDError).Code,
+					Message: err.(*SmartIDError).Message,
 				},
 			}
 		} else {
@@ -57,14 +56,14 @@ func (c *Client) Authenticate(req *AuthRequest) chan *SessionResponse {
 }
 
 // AuthenticateSync does authentication in synchronous way.
-func (c *Client) AuthenticateSync(req *AuthRequest) (*SessionResponse, *ResponseError) {
+func (c *Client) AuthenticateSync(req *AuthRequest) (*SessionResponse, error) {
 	session, err := c.newSession(req)
 	if err != nil {
 		return nil, err
 	}
 	resp, err := session.getResponse(c)
 	if err != nil {
-		return nil, &ResponseError{err.Code, err.Message}
+		return nil, err
 	}
 	return resp, nil
 }
@@ -78,7 +77,7 @@ func (c *Client) Sign(req *AuthRequest) chan *SessionResponse {
 
 // SignSync does signing in synchronous way. SignSync is very similar to
 // AuthenticateSync, but uses other endpoint.
-func (c *Client) SignSync(req *AuthRequest) (*SessionResponse, *ResponseError) {
+func (c *Client) SignSync(req *AuthRequest) (*SessionResponse, error) {
 	req.endpoint = EndpointSignature
 	return c.AuthenticateSync(req)
 }
@@ -88,7 +87,7 @@ func (c *Client) SignSync(req *AuthRequest) (*SessionResponse, *ResponseError) {
 // newSession contacts Smart-ID service for authentication to get
 // session ID in UUID format. This step also sends interaction order
 // to user's app.
-func (c *Client) newSession(req *AuthRequest) (*Session, *ResponseError) {
+func (c *Client) newSession(req *AuthRequest) (*Session, error) {
 	// Set some defaults fallback
 	if req.CertificateLevel == "" {
 		req.CertificateLevel = CertLevelQualified
@@ -125,7 +124,7 @@ func (c *Client) newSession(req *AuthRequest) (*Session, *ResponseError) {
 }
 
 // getEndpointResponse makes authentication request to the endpoint.
-func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, *ResponseError) {
+func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, error) {
 	url := fmt.Sprintf(
 		"%v%v/%v/%v",
 		c.APIUrl, req.endpoint, req.AuthType, req.Identifier,
@@ -133,13 +132,12 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, *Response
 
 	payload, err := json.Marshal(req)
 	if err != nil {
-		errMsg := fmt.Sprintf("Cannot encode JSON %+v", req)
-		return nil, &ResponseError{internalResponseError, errMsg}
+		return nil, err
 	}
 
 	httpResp, err := makeHTTPRequest(http.MethodPost, url, payload)
-	if err != nilerror {
-		return nil, &ResponseError{internalResponseError, "Cannot process HTTP request"}
+	if err != nil {
+		return nil, err
 	}
 
 	resp := AuthResponse{
@@ -150,23 +148,28 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, *Response
 	}
 
 	if !resp.IsStatusOK() {
-		return nil, &ResponseError{resp.Code, resp.Message}
+		return nil, &SmartIDError{
+			Err:     errors.New("Status is NOK"),
+			Code:    resp.Code,
+			Message: resp.Message,
+		}
 	}
 
 	body, err := getHTTPResponseBody(httpResp)
-	if err != nilerror {
-		return nil, &ResponseError{internalResponseError, "Cannot parse body"}
+	if err != nil {
+		return nil, err
 	}
 
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
-		return nil, &ResponseError{internalResponseError, "Cannot parse JSON"}
+		return nil, err
 	}
+
 	return &resp, nil
 }
 
 // getSessionResponse makes request to the session endpoint.
-func (c *Client) getSessionResponse(req *SessionRequest, s Session) (*SessionResponse, *ResponseError) {
+func (c *Client) getSessionResponse(req *SessionRequest, s Session) (*SessionResponse, error) {
 	url := fmt.Sprintf("%vsession/%v", c.APIUrl, req.SessionID)
 	if c.Poll != 0 {
 		url += fmt.Sprintf("?timeoutMs=%v", c.Poll)
@@ -174,10 +177,7 @@ func (c *Client) getSessionResponse(req *SessionRequest, s Session) (*SessionRes
 
 	httpResp, err := makeHTTPRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, &ResponseError{
-			httpResp.StatusCode,
-			resolveHTTPStatus(httpResp.StatusCode),
-		}
+		return nil, err
 	}
 
 	resp := SessionResponse{
@@ -195,7 +195,7 @@ func (c *Client) getSessionResponse(req *SessionRequest, s Session) (*SessionRes
 
 	errJSON := json.Unmarshal(body, &resp)
 	if errJSON != nil {
-		return nil, &ResponseError{internalResponseError, err.Error()}
+		return nil, err
 	}
 
 	if resp.IsCompleted() && resp.IsFailed() {
@@ -210,22 +210,22 @@ func (c *Client) getSessionResponse(req *SessionRequest, s Session) (*SessionRes
 }
 
 // getHTTPResponseBody extracts response body from HTTP response.
-func getHTTPResponseBody(r *http.Response) ([]byte, *ResponseError) {
+func getHTTPResponseBody(r *http.Response) ([]byte, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return nil, &ResponseError{internalResponseError, err.Error()}
+		return nil, err
 	}
 	defer r.Body.Close()
 	return body, nil
 }
 
 // makeHTTPRequest makes just a HTTP request.
-func makeHTTPRequest(mthd, url string, payld []byte) (*http.Response, *ResponseError) {
+func makeHTTPRequest(mthd, url string, payld []byte) (*http.Response, error) {
 	httpClient := http.Client{}
-	reader := bytes.NewReader(payld)
-	httpReq, err := http.NewRequest(mthd, url, reader)
+	rd := bytes.NewReader(payld)
+	httpReq, err := http.NewRequest(mthd, url, rd)
 	if err != nil {
-		return nil, &ResponseError{internalResponseError, "HTTP Protocol error"}
+		return nil, err
 	}
 	cLen := strconv.Itoa(len(payld))
 	httpReq.Header.Add("Content-Type", "application/json")
@@ -233,7 +233,7 @@ func makeHTTPRequest(mthd, url string, payld []byte) (*http.Response, *ResponseE
 
 	resp, err := httpClient.Do(httpReq)
 	if err != nil {
-		return nil, &ResponseError{internalResponseError, err.Error()}
+		return nil, err
 	}
 	return resp, nil
 }

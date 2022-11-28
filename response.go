@@ -5,8 +5,6 @@ import (
 	"net/http"
 )
 
-const internalResponseError = -1
-
 // Response is a basic response structure that holds code (usually HTTP
 // status) and a message (usually HTTP status text). It is typically only
 // used for HTTP code for responses.
@@ -23,9 +21,13 @@ func (r *Response) IsStatusOK() bool {
 	return r.Code == http.StatusOK
 }
 
-// ResponseError represents error for the response.
-type ResponseError Response
+// SmartIDError represents error for the response.
+type SmartIDError struct {
+	Err     error
+	Code    int
+	Message string
+}
 
-func (e *ResponseError) Error() string {
-	return fmt.Sprintf("Response error: %v %v", e.Code, e.Message)
+func (e *SmartIDError) Error() string {
+	return fmt.Sprintf("Smart ID error: %v %v", e.Code, e.Message)
 }

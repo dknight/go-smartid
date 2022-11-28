@@ -34,7 +34,7 @@ var clientTestTableAuth = ClientTestTable{
 		result: ClientTestResult{
 			Identity{
 				Country:      "EE",
-				CommonName:   "TESTNUMBER,QUALIFIED OK1",
+				CommonName:   "TESTNUMBER,OK",
 				SerialNumber: "PNOEE-30303039914",
 			},
 			Response{
@@ -57,7 +57,7 @@ var clientTestTableAuth = ClientTestTable{
 		result: ClientTestResult{
 			Identity{
 				Country:      "EE",
-				CommonName:   "TESTNUMBER,MULTIPLE OK,PNOEE-30303039816",
+				CommonName:   "TESTNUMBER,MULTIPLE OK",
 				SerialNumber: "PNOEE-30303039816",
 			},
 			Response{
@@ -102,7 +102,7 @@ var clientTestTableAuth = ClientTestTable{
 		result: ClientTestResult{
 			Identity{
 				Country:      "LT",
-				CommonName:   "TESTNUMBER,QUALIFIED OK1",
+				CommonName:   "TESTNUMBER, OK",
 				SerialNumber: "PNOLT-49912318881",
 			},
 			Response{
@@ -124,7 +124,7 @@ var clientTestTableAuth = ClientTestTable{
 		result: ClientTestResult{
 			Identity{
 				Country:      "LV",
-				CommonName:   "TESTNUMBER,QUALIFIED OK1",
+				CommonName:   "TESTNUMBER,OK",
 				SerialNumber: "PNOLV-311299-18886",
 			},
 			Response{
@@ -381,7 +381,7 @@ var clientTestTableSign = ClientTestTable{
 		result: ClientTestResult{
 			Identity{
 				Country:      "EE",
-				CommonName:   "TESTNUMBER,QUALIFIED OK1",
+				CommonName:   "TESTNUMBER,OK",
 				SerialNumber: "PNOEE-30303039914",
 			},
 			Response{

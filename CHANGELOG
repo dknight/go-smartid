@@ -1,6 +1,7 @@
 v1.0.3
 * Added method to Cert GetIssuer()
 * Some text inaccuracies and typos are fixed.
+* Refactored error handling.
 
 v1.0.2
 * Some typos and mistakes are fixed.

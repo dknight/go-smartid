@@ -60,7 +60,4 @@ type AuthRequest struct {
 
 	// endpoint is the API endendpoint
 	endpoint string
-
-	// Request Request object contains code and message.
-	Request
 }

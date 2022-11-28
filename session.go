@@ -41,7 +41,7 @@ type Session struct {
 
 // getResponse makes response to session endpoint API. It also polls from
 // the service session status.
-func (s Session) getResponse(c *Client) (*SessionResponse, *ResponseError) {
+func (s Session) getResponse(c *Client) (*SessionResponse, error) {
 	req := &SessionRequest{
 		SessionID:        s.SessionID,
 		hash:             s.hash,
