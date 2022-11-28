@@ -2,5 +2,6 @@ authentication/private/:issuer/:encoded-identifier
 signature/private/:issuer/:encoded-identifier
 
 Rework error handling
+Add test for GetIssuer() and add SK issuers list.
+
 Improve quality of tests
-Make benchmarks
