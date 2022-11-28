@@ -86,6 +86,11 @@ func (c *Cert) GetSubject() *pkix.Name {
 	return &c.GetX509Cert().Subject
 }
 
+// GetIssuer get issuer from certificate in PKIX format.
+func (c *Cert) GetIssuer() *pkix.Name {
+	return &c.GetX509Cert().Issuer
+}
+
 // createCertFromPath certificate from given file system path.
 func createCertFromPath(path string) (*x509.Certificate, error) {
 	bs, err := ioutil.ReadFile(path)
