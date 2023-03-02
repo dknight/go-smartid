@@ -21,13 +21,13 @@ func (r *Response) IsStatusOK() bool {
 	return r.Code == http.StatusOK
 }
 
-// SmartIDError represents error for the response.
-type SmartIDError struct {
+// Error represents error for the response.
+type Error struct {
 	Err     error
 	Code    int
 	Message string
 }
 
-func (e *SmartIDError) Error() string {
+func (e *Error) Error() string {
 	return fmt.Sprintf("Smart ID error: %v %v", e.Code, e.Message)
 }

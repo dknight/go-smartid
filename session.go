@@ -171,7 +171,7 @@ func (r *SessionResponse) GetIdentity() *Identity {
 	return newIdentity(r.Cert.GetSubject())
 }
 
-// GetIdentity gets user identity based on certificated.
+// GetIssuerIdentity gets user identity based on certificated.
 func (r *SessionResponse) GetIssuerIdentity() *Identity {
 	if r.IsFailed() {
 		return nil

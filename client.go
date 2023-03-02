@@ -43,8 +43,8 @@ func (c *Client) Authenticate(req *AuthRequest) chan *SessionResponse {
 		if err != nil {
 			ch <- &SessionResponse{
 				Response: Response{
-					Code:    err.(*SmartIDError).Code,
-					Message: err.(*SmartIDError).Message,
+					Code:    err.(*Error).Code,
+					Message: err.(*Error).Message,
 				},
 			}
 		} else {
@@ -148,7 +148,7 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, error) {
 	}
 
 	if !resp.IsStatusOK() {
-		return nil, &SmartIDError{
+		return nil, &Error{
 			Err:     errors.New("Status is NOK"),
 			Code:    resp.Code,
 			Message: resp.Message,
@@ -169,7 +169,9 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, error) {
 }
 
 // getSessionResponse makes request to the session endpoint.
-func (c *Client) getSessionResponse(req *SessionRequest, s Session) (*SessionResponse, error) {
+func (c *Client) getSessionResponse(
+	req *SessionRequest, s Session,
+) (*SessionResponse, error) {
 	url := fmt.Sprintf("%vsession/%v", c.APIUrl, req.SessionID)
 	if c.Poll != 0 {
 		url += fmt.Sprintf("?timeoutMs=%v", c.Poll)
