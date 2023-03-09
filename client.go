@@ -46,13 +46,16 @@ func WithHttpClient(httpClient *http.Client) Option {
 // 120000ms.
 func NewClient(url string, poll uint32, opts ...Option) *Client {
 	client := &Client{
-		APIUrl:     url,
-		Poll:       poll,
-		httpClient: &http.Client{},
+		APIUrl: url,
+		Poll:   poll,
 	}
 
 	for _, v := range opts {
 		v.apply(client)
+	}
+
+	if client.httpClient == nil {
+		client.httpClient = new(http.Client)
 	}
 
 	return client
