@@ -24,15 +24,41 @@ type Client struct {
 	// timeout is 120000, the minimum is 1000. If not specified by the client,
 	// a value halfway between maximum and minimum is used.
 	Poll uint32
+
+	httpClient *http.Client
+}
+
+// Option interface used for setting optional Client properties.
+type Option interface {
+	apply(*Client)
+}
+
+type optionFunc func(*Client)
+
+func (o optionFunc) apply(c *Client) { o(c) }
+
+// WithHttpClient specifies which http client to use.
+func WithHttpClient(httpClient *http.Client) Option {
+	return optionFunc(func(c *Client) { c.httpClient = httpClient })
 }
 
 // NewClient creates a new client instance. Poll will be in range 1000ms to
 // 120000ms.
-func NewClient(url string, poll uint32) *Client {
-	return &Client{
+func NewClient(url string, poll uint32, opts ...Option) *Client {
+	client := &Client{
 		APIUrl: url,
 		Poll:   poll,
 	}
+
+	for _, v := range opts {
+		v.apply(client)
+	}
+
+	if client.httpClient == nil {
+		client.httpClient = new(http.Client)
+	}
+
+	return client
 }
 
 // Authenticate does authentication in asynchronous way using channel.
@@ -135,7 +161,7 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, error) {
 		return nil, err
 	}
 
-	httpResp, err := makeHTTPRequest(http.MethodPost, url, payload)
+	httpResp, err := makeHTTPRequest(c.httpClient, http.MethodPost, url, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +203,7 @@ func (c *Client) getSessionResponse(
 		url += fmt.Sprintf("?timeoutMs=%v", c.Poll)
 	}
 
-	httpResp, err := makeHTTPRequest(http.MethodGet, url, nil)
+	httpResp, err := makeHTTPRequest(c.httpClient, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -222,8 +248,7 @@ func getHTTPResponseBody(r *http.Response) ([]byte, error) {
 }
 
 // makeHTTPRequest makes just a HTTP request.
-func makeHTTPRequest(mthd, url string, payld []byte) (*http.Response, error) {
-	httpClient := http.Client{}
+func makeHTTPRequest(httpClient *http.Client, mthd, url string, payld []byte) (*http.Response, error) {
 	rd := bytes.NewReader(payld)
 	httpReq, err := http.NewRequest(mthd, url, rd)
 	if err != nil {
