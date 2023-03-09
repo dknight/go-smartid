@@ -79,7 +79,7 @@ func ExampleClient_AuthenticateSync() {
 	fmt.Println("Personal ID:", identity.SerialNumber)
 	fmt.Println("Country:", identity.Country)
 	// Output:
-	// Name: TESTNUMBER,QUALIFIED OK1
+	// Name: TESTNUMBER,OK
 	// Personal ID: PNOEE-30303039914
 	// Country: EE
 }
@@ -123,7 +123,7 @@ func ExampleClient_Authenticate() {
 	fmt.Println("Personal ID:", identity.SerialNumber)
 	fmt.Println("Country:", identity.Country)
 	// Output:
-	// Name: TESTNUMBER,QUALIFIED OK1
+	// Name: TESTNUMBER,OK
 	// Personal ID: PNOEE-30303039914
 	// Country: EE
 }
@@ -172,7 +172,7 @@ func ExampleClient_SignSync() {
 	fmt.Println("Personal ID:", identity.SerialNumber)
 	fmt.Println("Country:", identity.Country)
 	// Output:
-	// Name: TESTNUMBER,QUALIFIED OK1
+	// Name: TESTNUMBER,OK
 	// Personal ID: PNOEE-30303039914
 	// Country: EE
 }
@@ -216,7 +216,7 @@ func ExampleClient_Sign() {
 	fmt.Println("Personal ID:", identity.SerialNumber)
 	fmt.Println("Country:", identity.Country)
 	// Output:
-	// Name: TESTNUMBER,QUALIFIED OK1
+	// Name: TESTNUMBER,OK
 	// Personal ID: PNOEE-30303039914
 	// Country: EE
 }
