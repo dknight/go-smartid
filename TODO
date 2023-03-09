@@ -1,6 +1,7 @@
-authentication/private/:issuer/:encoded-identifier
-signature/private/:issuer/:encoded-identifier
-
+# Test
+Improve quality of tests
+Due to instability of SK, make mock server with JSON response. (important!)
 Add test for GetIssuer() and add SK issuers list.
 
-Improve quality of tests
+authentication/private/:issuer/:encoded-identifier
+signature/private/:issuer/:encoded-identifier
