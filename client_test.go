@@ -504,3 +504,28 @@ func TestSignExtended(t *testing.T) {
 	fmt.Println("Personal ID:", identity.SerialNumber)
 	fmt.Println("Country:", identity.Country)
 }
+
+func TestNewClient(t *testing.T) {
+	t.Parallel()
+
+	t.Run("http client set by default", func(t *testing.T) {
+		t.Parallel()
+
+		client := NewClient("https://sid.demo.sk.ee/smart-id-rp/v2/", 10000)
+
+		if client.httpClient == nil {
+			t.Error("httpClient is not set by default")
+		}
+	})
+
+	t.Run("specify http client", func(t *testing.T) {
+		t.Parallel()
+
+		httpClient := new(http.Client)
+		client := NewClient("https://sid.demo.sk.ee/smart-id-rp/v2/", 10000, WithHttpClient(httpClient))
+
+		if client.httpClient != httpClient {
+			t.Error("httpClient is not specified")
+		}
+	})
+}
