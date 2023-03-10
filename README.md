@@ -170,4 +170,4 @@ hesitate and make pull request or issue.
 
 ## License
 
-MIT 2022
+MIT 2022-2023
