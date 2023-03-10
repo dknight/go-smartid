@@ -1,6 +1,7 @@
 package smartid
 
 import (
+	"context"
 	"fmt"
 	"log"
 )
@@ -51,7 +52,7 @@ func ExampleClient_AuthenticateSync() {
 		AuthType:   AuthTypeEtsi,
 	}
 
-	resp, err := client.AuthenticateSync(&request)
+	resp, err := client.AuthenticateSync(context.TODO(), &request)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -99,7 +100,7 @@ func ExampleClient_Authenticate() {
 		AuthType:   AuthTypeEtsi,
 	}
 
-	resp := <-client.Authenticate(&request)
+	resp := <-client.Authenticate(context.TODO(), &request)
 	if _, err := resp.Validate(); err != nil {
 		log.Fatalln(err)
 	}
@@ -144,7 +145,7 @@ func ExampleClient_SignSync() {
 		AuthType:   AuthTypeEtsi,
 	}
 
-	resp, err := client.AuthenticateSync(&request)
+	resp, err := client.AuthenticateSync(context.TODO(), &request)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -192,7 +193,7 @@ func ExampleClient_Sign() {
 		AuthType:   AuthTypeEtsi,
 	}
 
-	resp := <-client.Authenticate(&request)
+	resp := <-client.Authenticate(context.TODO(), &request)
 	if _, err := resp.Validate(); err != nil {
 		log.Fatalln(err)
 	}
