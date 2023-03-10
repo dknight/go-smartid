@@ -1,6 +1,7 @@
 package smartid
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -334,7 +335,7 @@ var clientTestTableAuth = ClientTestTable{
 func TestAuthenticate(t *testing.T) {
 	for key, test := range clientTestTableAuth {
 		fmt.Println("Testing auth", key)
-		ch := client.Authenticate(&test.request)
+		ch := client.Authenticate(context.TODO(), &test.request)
 		resp := <-ch
 		if resp.Code != test.result.Code {
 			t.Error("expected HTTP code", test.result.Code, "got", resp.Code)
@@ -398,7 +399,7 @@ var clientTestTableSign = ClientTestTable{
 func TestSign(t *testing.T) {
 	for key, test := range clientTestTableSign {
 		fmt.Println("Testing sign", key)
-		ch := client.Sign(&test.request)
+		ch := client.Sign(context.TODO(), &test.request)
 		resp := <-ch
 		if resp.Code != test.result.Code {
 			t.Error("expected HTTP code", test.result.Code, "got", resp.Code)
@@ -460,7 +461,7 @@ var clientTestTableSignFailed = ClientTestTable{
 func TestSignFailedCert(t *testing.T) {
 	for key, test := range clientTestTableSignFailed {
 		fmt.Println("Testing sign", key)
-		ch := client.Sign(&test.request)
+		ch := client.Sign(context.TODO(), &test.request)
 		resp := <-ch
 		if ok, _ := resp.Validate(); ok == true {
 			t.Error("Certificate is valid. Expcted", ok, "got", !ok)
@@ -497,7 +498,7 @@ func TestSignExtended(t *testing.T) {
 		},
 	}
 
-	resp := <-client.Sign(&request)
+	resp := <-client.Sign(context.TODO(), &request)
 
 	if _, err := resp.Validate(); err != nil {
 		log.Fatalln(err)

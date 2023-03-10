@@ -41,7 +41,7 @@ request := AuthRequest{
 }
 
 // This blocks thread until it completes
-resp, err := client.AuthenticateSync(&request)
+resp, err := client.AuthenticateSync(context.TODO(), &request)
 if err != nil {
 	log.Fatalln(err)
 }
@@ -111,7 +111,7 @@ request := AuthRequest{
 	},
 }
 
-resp := <-client.Sign(&request)
+resp := <-client.Sign(context.TODO(), &request)
 if _, err := resp.Validate(); err != nil {
 	log.Fatalln(err)
 }
