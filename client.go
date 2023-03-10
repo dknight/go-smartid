@@ -2,6 +2,7 @@ package smartid
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -62,10 +63,10 @@ func NewClient(url string, poll uint32, opts ...Option) *Client {
 }
 
 // Authenticate does authentication in asynchronous way using channel.
-func (c *Client) Authenticate(req *AuthRequest) chan *SessionResponse {
+func (c *Client) Authenticate(ctx context.Context, req *AuthRequest) chan *SessionResponse {
 	ch := make(chan *SessionResponse)
 	go func() {
-		resp, err := c.AuthenticateSync(req)
+		resp, err := c.AuthenticateSync(ctx, req)
 		if err != nil {
 			ch <- &SessionResponse{
 				Response: Response{
@@ -82,12 +83,12 @@ func (c *Client) Authenticate(req *AuthRequest) chan *SessionResponse {
 }
 
 // AuthenticateSync does authentication in synchronous way.
-func (c *Client) AuthenticateSync(req *AuthRequest) (*SessionResponse, error) {
-	session, err := c.newSession(req)
+func (c *Client) AuthenticateSync(ctx context.Context, req *AuthRequest) (*SessionResponse, error) {
+	session, err := c.newSession(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := session.getResponse(c)
+	resp, err := session.getResponse(ctx, c)
 	if err != nil {
 		return nil, err
 	}
@@ -96,16 +97,16 @@ func (c *Client) AuthenticateSync(req *AuthRequest) (*SessionResponse, error) {
 
 // Sign does signing in asynchronous way using channel. Sign is very similar
 // to Authenticate, but uses other endpoint.
-func (c *Client) Sign(req *AuthRequest) chan *SessionResponse {
+func (c *Client) Sign(ctx context.Context, req *AuthRequest) chan *SessionResponse {
 	req.endpoint = EndpointSignature
-	return c.Authenticate(req)
+	return c.Authenticate(ctx, req)
 }
 
 // SignSync does signing in synchronous way. SignSync is very similar to
 // AuthenticateSync, but uses other endpoint.
-func (c *Client) SignSync(req *AuthRequest) (*SessionResponse, error) {
+func (c *Client) SignSync(ctx context.Context, req *AuthRequest) (*SessionResponse, error) {
 	req.endpoint = EndpointSignature
-	return c.AuthenticateSync(req)
+	return c.AuthenticateSync(ctx, req)
 }
 
 // --------------- unexposed -----------------
@@ -113,7 +114,7 @@ func (c *Client) SignSync(req *AuthRequest) (*SessionResponse, error) {
 // newSession contacts Smart-ID service for authentication to get
 // session ID in UUID format. This step also sends interaction order
 // to user's app.
-func (c *Client) newSession(req *AuthRequest) (*Session, error) {
+func (c *Client) newSession(ctx context.Context, req *AuthRequest) (*Session, error) {
 	// Set some defaults fallback
 	if req.CertificateLevel == "" {
 		req.CertificateLevel = CertLevelQualified
@@ -137,7 +138,7 @@ func (c *Client) newSession(req *AuthRequest) (*Session, error) {
 	}
 	// end of defaults fallback
 
-	resp, err := c.getEndpointResponse(req)
+	resp, err := c.getEndpointResponse(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +151,7 @@ func (c *Client) newSession(req *AuthRequest) (*Session, error) {
 }
 
 // getEndpointResponse makes authentication request to the endpoint.
-func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, error) {
+func (c *Client) getEndpointResponse(ctx context.Context, req *AuthRequest) (*AuthResponse, error) {
 	url := fmt.Sprintf(
 		"%v%v/%v/%v",
 		c.APIUrl, req.endpoint, req.AuthType, req.Identifier,
@@ -161,7 +162,7 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, error) {
 		return nil, err
 	}
 
-	httpResp, err := makeHTTPRequest(c.httpClient, http.MethodPost, url, payload)
+	httpResp, err := makeHTTPRequest(ctx, c.httpClient, http.MethodPost, url, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -196,6 +197,7 @@ func (c *Client) getEndpointResponse(req *AuthRequest) (*AuthResponse, error) {
 
 // getSessionResponse makes request to the session endpoint.
 func (c *Client) getSessionResponse(
+	ctx context.Context,
 	req *SessionRequest, s Session,
 ) (*SessionResponse, error) {
 	url := fmt.Sprintf("%vsession/%v", c.APIUrl, req.SessionID)
@@ -203,7 +205,7 @@ func (c *Client) getSessionResponse(
 		url += fmt.Sprintf("?timeoutMs=%v", c.Poll)
 	}
 
-	httpResp, err := makeHTTPRequest(c.httpClient, http.MethodGet, url, nil)
+	httpResp, err := makeHTTPRequest(ctx, c.httpClient, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -248,9 +250,9 @@ func getHTTPResponseBody(r *http.Response) ([]byte, error) {
 }
 
 // makeHTTPRequest makes just a HTTP request.
-func makeHTTPRequest(httpClient *http.Client, mthd, url string, payld []byte) (*http.Response, error) {
+func makeHTTPRequest(ctx context.Context, httpClient *http.Client, mthd, url string, payld []byte) (*http.Response, error) {
 	rd := bytes.NewReader(payld)
-	httpReq, err := http.NewRequest(mthd, url, rd)
+	httpReq, err := http.NewRequestWithContext(ctx, mthd, url, rd)
 	if err != nil {
 		return nil, err
 	}
