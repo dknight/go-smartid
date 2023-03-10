@@ -1,6 +1,7 @@
 package smartid
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -41,14 +42,14 @@ type Session struct {
 
 // getResponse makes response to session endpoint API. It also polls from
 // the service session status.
-func (s Session) getResponse(c *Client) (*SessionResponse, error) {
+func (s Session) getResponse(ctx context.Context, c *Client) (*SessionResponse, error) {
 	req := &SessionRequest{
 		SessionID:        s.SessionID,
 		hash:             s.hash,
 		certificateLevel: s.certificateLevel,
 	}
 	for {
-		resp, err := c.getSessionResponse(req, s)
+		resp, err := c.getSessionResponse(ctx, req, s)
 		if err != nil {
 			return nil, err
 		}
@@ -109,14 +110,14 @@ type SessionResponse struct {
 // If the return value is SESSION_RESULT_OK, this means there is no failure.
 //
 // Possible result codes are:
-//	- SessionResultOK
-//	- SessionResultUserRefused
-//	- SessionResultUserRefusedDisplayTextAndPIN
-//	- SessionResultUserRefusedVCChoice
-//	- SessionResultUserRefusedConfirmationMessage
-//	- SessionResultUserRefusedConfirmationMessageWithVCChoice
-//	- SessionResultUserWrongVC
-//	- SessionResultUserTimeout
+//   - SessionResultOK
+//   - SessionResultUserRefused
+//   - SessionResultUserRefusedDisplayTextAndPIN
+//   - SessionResultUserRefusedVCChoice
+//   - SessionResultUserRefusedConfirmationMessage
+//   - SessionResultUserRefusedConfirmationMessageWithVCChoice
+//   - SessionResultUserWrongVC
+//   - SessionResultUserTimeout
 func (r *SessionResponse) GetFailureReason() string {
 	if r.Result.EndResult == "" {
 		return r.Message
