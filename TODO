@@ -1,5 +1,3 @@
-# Test
-Improve quality of tests
 Due to instability of SK, make mock server with JSON response. (important!)
 Add test for GetIssuer() and add SK issuers list.
 
