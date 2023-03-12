@@ -333,41 +333,47 @@ var clientTestTableAuth = ClientTestTable{
 }
 
 func TestAuthenticate(t *testing.T) {
-	for key, test := range clientTestTableAuth {
-		fmt.Println("Testing auth", key)
-		ch := client.Authenticate(context.TODO(), &test.request)
-		resp := <-ch
-		if resp.Code != test.result.Code {
-			t.Error("expected HTTP code", test.result.Code, "got", resp.Code)
-		}
-		_, err := resp.Validate()
-		if err != nil && err.Error() != test.result.Message {
-			t.Error("expected name", test.result.Message, "got", err.Error())
-		}
+	t.Parallel()
 
-		identity := resp.GetIdentity()
-		if identity == nil { // if no identify no point to check further
-			continue
-		}
-		if identity.Country != test.result.Country {
-			t.Error("expected country", test.result.Country, "got",
-				identity.Country)
-		}
-		if identity.CommonName != test.result.CommonName {
-			t.Error("expected name", test.result.CommonName, "got",
-				identity.CommonName)
-		}
-		if identity.SerialNumber != test.result.SerialNumber {
-			t.Error("expected personal id", test.result.SerialNumber, "got",
-				identity.SerialNumber)
-		}
-		// TODO fix certs
-		// certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
-		// Might be problems with ca-certificates
-		// if ok, err := resp.Cert.Verify(certPaths); !ok {
-		// 	t.Error(err)
-		// }
-		// _, _ = resp.Cert.Verify(certPaths)
+	for key, test := range clientTestTableAuth {
+		testName := fmt.Sprintf("Testing auth: %s\n", key)
+		t.Run(testName, func(t *testing.T) {
+			t.Parallel()
+			fmt.Print(testName)
+			ch := client.Authenticate(context.TODO(), &test.request)
+			resp := <-ch
+			if resp.Code != test.result.Code {
+				t.Error("expected HTTP code", test.result.Code, "got", resp.Code)
+			}
+			_, err := resp.Validate()
+			if err != nil && err.Error() != test.result.Message {
+				t.Error("expected name", test.result.Message, "got", err.Error())
+			}
+
+			identity := resp.GetIdentity()
+			if identity == nil { // if no identify no point to check further
+				return
+			}
+			if identity.Country != test.result.Country {
+				t.Error("expected country", test.result.Country, "got",
+					identity.Country)
+			}
+			if identity.CommonName != test.result.CommonName {
+				t.Error("expected name", test.result.CommonName, "got",
+					identity.CommonName)
+			}
+			if identity.SerialNumber != test.result.SerialNumber {
+				t.Error("expected personal id", test.result.SerialNumber, "got",
+					identity.SerialNumber)
+			}
+			// TODO fix certs
+			// certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
+			// Might be problems with ca-certificates
+			// if ok, err := resp.Cert.Verify(certPaths); !ok {
+			// 	t.Error(err)
+			// }
+			// _, _ = resp.Cert.Verify(certPaths)
+		})
 	}
 }
 
@@ -397,40 +403,45 @@ var clientTestTableSign = ClientTestTable{
 }
 
 func TestSign(t *testing.T) {
+	t.Parallel()
+
 	for key, test := range clientTestTableSign {
-		fmt.Println("Testing sign", key)
-		ch := client.Sign(context.TODO(), &test.request)
-		resp := <-ch
-		if resp.Code != test.result.Code {
-			t.Error("expected HTTP code", test.result.Code, "got", resp.Code)
-		}
-		identity := resp.GetIdentity()
-		if identity == nil { // if no identify no point to check further
-			continue
-		}
-		if identity.Country != test.result.Country {
-			t.Error("expected country", test.result.Country, "got",
-				identity.Country)
-		}
-		if identity.CommonName != test.result.CommonName {
-			t.Error("expected name", test.result.CommonName, "got",
-				identity.CommonName)
-		}
-		if identity.SerialNumber != test.result.SerialNumber {
-			t.Error("expected personal id", test.result.SerialNumber, "got",
-				identity.SerialNumber)
-		}
-		_, err := resp.Validate()
-		if err != nil {
-			t.Error("Invalid response", err.Error())
-		}
-		// TODO fix certs
-		// certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
-		// Might be problems with ca-certificates
-		// if ok, err := resp.Cert.Verify(certPaths); !ok {
-		// 	t.Error(err)
-		// }
-		// _, _ = resp.Cert.Verify(certPaths)
+		testName := fmt.Sprintf("Testing sign: %s\n", key)
+		t.Run(testName, func(t *testing.T) {
+			ch := client.Sign(context.TODO(), &test.request)
+			resp := <-ch
+			if resp.Code != test.result.Code {
+				t.Error("expected HTTP code", test.result.Code, "got", resp.Code)
+			}
+			identity := resp.GetIdentity()
+			if identity == nil { // if no identify no point to check further
+				return
+			}
+			if identity.Country != test.result.Country {
+				t.Error("expected country", test.result.Country, "got",
+					identity.Country)
+			}
+			if identity.CommonName != test.result.CommonName {
+				t.Error("expected name", test.result.CommonName, "got",
+					identity.CommonName)
+			}
+			if identity.SerialNumber != test.result.SerialNumber {
+				t.Error("expected personal id", test.result.SerialNumber, "got",
+					identity.SerialNumber)
+			}
+			_, err := resp.Validate()
+			if err != nil {
+				t.Error("Invalid response", err.Error())
+			}
+
+			// TODO fix certs
+			// certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
+			// Might be problems with ca-certificates
+			// if ok, err := resp.Cert.Verify(certPaths); !ok {
+			// 	t.Error(err)
+			// }
+			// _, _ = resp.Cert.Verify(certPaths)
+		})
 	}
 }
 
@@ -459,17 +470,24 @@ var clientTestTableSignFailed = ClientTestTable{
 }
 
 func TestSignFailedCert(t *testing.T) {
+	t.Parallel()
+
 	for key, test := range clientTestTableSignFailed {
-		fmt.Println("Testing sign", key)
-		ch := client.Sign(context.TODO(), &test.request)
-		resp := <-ch
-		if ok, _ := resp.Validate(); ok == true {
-			t.Error("Certificate is valid. Expcted", ok, "got", !ok)
-		}
+		testName := fmt.Sprintf("Testing sign: %s\n", key)
+		t.Run(testName, func(t *testing.T) {
+			t.Parallel()
+			ch := client.Sign(context.TODO(), &test.request)
+			resp := <-ch
+			if ok, _ := resp.Validate(); ok == true {
+				t.Error("Certificate is valid. Expcted", ok, "got", !ok)
+			}
+		})
 	}
 }
 
 func TestSignExtended(t *testing.T) {
+	t.Parallel()
+
 	semid := NewSemanticIdentifier(IdentifierTypePNO, CountryEE, "30303039914")
 	client := NewClient("https://sid.demo.sk.ee/smart-id-rp/v2/", 5000)
 	request := AuthRequest{
