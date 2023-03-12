@@ -205,7 +205,9 @@ func (c *Client) getSessionResponse(
 		url += fmt.Sprintf("?timeoutMs=%v", c.Poll)
 	}
 
-	httpResp, err := makeHTTPRequest(ctx, c.httpClient, http.MethodGet, url, nil)
+	httpResp, err := makeHTTPRequest(
+		ctx, c.httpClient, http.MethodGet, url, nil,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -250,7 +252,12 @@ func getHTTPResponseBody(r *http.Response) ([]byte, error) {
 }
 
 // makeHTTPRequest makes just a HTTP request.
-func makeHTTPRequest(ctx context.Context, httpClient *http.Client, mthd, url string, payld []byte) (*http.Response, error) {
+func makeHTTPRequest(
+	ctx context.Context,
+	httpClient *http.Client,
+	mthd, url string,
+	payld []byte,
+) (*http.Response, error) {
 	rd := bytes.NewReader(payld)
 	httpReq, err := http.NewRequestWithContext(ctx, mthd, url, rd)
 	if err != nil {
