@@ -70,7 +70,7 @@ func ExampleClient_AuthenticateSync() {
 	//
 	// sudo apt-get install ca-certificates
 	// sudo dnf install ca-certificates
-	certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
+	certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
 	if ok, err := resp.Cert.Verify(certPaths); !ok {
 		log.Fatalln(err)
 	}
@@ -114,7 +114,7 @@ func ExampleClient_Authenticate() {
 	//
 	// sudo apt-get install ca-certificates
 	// sudo dnf install ca-certificates
-	certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
+	certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
 	if ok, err := resp.Cert.Verify(certPaths); !ok {
 		log.Fatalln(err)
 	}
@@ -163,7 +163,7 @@ func ExampleClient_SignSync() {
 	//
 	// sudo apt-get install ca-certificates
 	// sudo dnf install ca-certificates
-	certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
+	certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
 	if ok, err := resp.Cert.Verify(certPaths); !ok {
 		log.Fatalln(err)
 	}
@@ -207,7 +207,7 @@ func ExampleClient_Sign() {
 	//
 	// sudo apt-get install ca-certificates
 	// sudo dnf install ca-certificates
-	certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
+	certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
 	if ok, err := resp.Cert.Verify(certPaths); !ok {
 		log.Fatalln(err)
 	}

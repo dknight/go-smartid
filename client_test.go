@@ -107,8 +107,9 @@ var clientTestTableAuth = ClientTestTable{
 				SerialNumber: "PNOLT-49912318881",
 			},
 			Response{
-				Code:    471,
-				Message: "No suitable account of requested type found, but user has some other accounts.",
+				Code: 471,
+				Message: "No suitable account of requested type found," +
+					" but user has some other accounts.",
 			},
 		},
 	},
@@ -129,55 +130,54 @@ var clientTestTableAuth = ClientTestTable{
 				SerialNumber: "PNOLV-311299-18886",
 			},
 			Response{
-				Code:    471,
-				Message: "No suitable account of requested type found, but user has some other accounts.",
+				Code: 471,
+				Message: "No suitable account of requested type found," +
+					" but user has some other accounts.",
 			},
 		},
 	},
-	// Not found?
-	// "client_ee_doc_new_cert": {
-	// 	request: AuthRequest{
-	// 		RelyingPartyUUID: demoPartyUUID,
-	// 		RelyingPartyName: demoPartyName,
-	// 		Hash:             GenerateAuthHash(SHA512),
-	// 		HashType:         SHA512,
-	// 		Identifier:       "PNOEE-39912319997-AAAA-Q",
-	// 		AuthType:         AuthTypeDocument,
-	// 	},
-	// 	result: ClientTestResult{
-	// 		Identity{
-	// 			Country:      "EE",
-	// 			CommonName:   "TESTNUMBER,BOD",
-	// 			SerialNumber: "PNOEE-39912319997",
-	// 		},
-	// 		Response{
-	// 			Code:    http.StatusOK,
-	// 			Message: SessionResultOK,
-	// 		},
-	// 	},
-	// },
-	// Not found?
-	// "client_ee_doc_ageu18": {
-	// 	request: AuthRequest{
-	// 		RelyingPartyUUID: demoPartyUUID,
-	// 		RelyingPartyName: demoPartyName,
-	// 		Hash:             GenerateAuthHash(SHA512),
-	// 		HashType:         SHA512,
-	// 		Identifier:       "PNOEE-50701019992-9ZN6-Q",
-	// 		AuthType:         AuthTypeDocument,
-	// 	},
-	// 	result: ClientTestResult{
-	// 		Identity{
-	// 			Country:      "EE",
-	// 			CommonName:   "TESTNUMBER,MINOR",
-	// 			SerialNumber: "PNOEE-50701019992",
-	// 		},
-	// 		Response{
-	// 			Code:    http.StatusOK,
-	// 			Message: SessionResultOK,
-	// 		},
-	// 	},
-	// },
+	"client_ee_doc_new_cert": {
+		request: AuthRequest{
+			RelyingPartyUUID: demoPartyUUID,
+			RelyingPartyName: demoPartyName,
+			Hash:             GenerateAuthHash(SHA512),
+			HashType:         SHA512,
+			Identifier:       "PNOEE-39912319997-AAAA-Q",
+			AuthType:         AuthTypeDocument,
+		},
+		result: ClientTestResult{
+			Identity{
+				Country:      "EE",
+				CommonName:   "TESTNUMBER,BOD",
+				SerialNumber: "PNOEE-39912319997",
+			},
+			Response{
+				Code:    http.StatusOK,
+				Message: SessionResultOK,
+			},
+		},
+	},
+	"client_ee_doc_ageu18": {
+		request: AuthRequest{
+			RelyingPartyUUID: demoPartyUUID,
+			RelyingPartyName: demoPartyName,
+			Hash:             GenerateAuthHash(SHA512),
+			HashType:         SHA512,
+			Identifier:       "PNOEE-50701019992-9ZN6-Q",
+			AuthType:         AuthTypeDocument,
+		},
+		result: ClientTestResult{
+			Identity{
+				Country:      "EE",
+				CommonName:   "TESTNUMBER,MINOR",
+				SerialNumber: "PNOEE-50701019992",
+			},
+			Response{
+				Code:    http.StatusOK,
+				Message: SessionResultOK,
+			},
+		},
+	},
 	"client_ee_id_refuse1": {
 		request: AuthRequest{
 			RelyingPartyUUID: demoPartyUUID,
@@ -343,15 +343,20 @@ func TestAuthenticate(t *testing.T) {
 			ch := client.Authenticate(context.TODO(), &test.request)
 			resp := <-ch
 			if resp.Code != test.result.Code {
-				t.Error("expected HTTP code", test.result.Code, "got", resp.Code)
+				t.Error(
+					"expected HTTP code", test.result.Code, "got", resp.Code,
+				)
 			}
 			_, err := resp.Validate()
 			if err != nil && err.Error() != test.result.Message {
-				t.Error("expected name", test.result.Message, "got", err.Error())
+				t.Error(
+					"expected name", test.result.Message, "got", err.Error(),
+				)
 			}
 
 			identity := resp.GetIdentity()
-			if identity == nil { // if no identify no point to check further
+			// if no identify no point to check further
+			if identity == nil {
 				return
 			}
 			if identity.Country != test.result.Country {
@@ -363,16 +368,18 @@ func TestAuthenticate(t *testing.T) {
 					identity.CommonName)
 			}
 			if identity.SerialNumber != test.result.SerialNumber {
-				t.Error("expected personal id", test.result.SerialNumber, "got",
-					identity.SerialNumber)
+				t.Error(
+					"expected personal id",
+					test.result.SerialNumber,
+					"got",
+					identity.SerialNumber,
+				)
 			}
-			// TODO fix certs
-			// certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
-			// Might be problems with ca-certificates
-			// if ok, err := resp.Cert.Verify(certPaths); !ok {
-			// 	t.Error(err)
-			// }
-			// _, _ = resp.Cert.Verify(certPaths)
+
+			certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
+			if ok, err := resp.Cert.Verify(certPaths); !ok {
+				t.Error(err)
+			}
 		})
 	}
 }
@@ -411,11 +418,13 @@ func TestSign(t *testing.T) {
 			ch := client.Sign(context.TODO(), &test.request)
 			resp := <-ch
 			if resp.Code != test.result.Code {
-				t.Error("expected HTTP code", test.result.Code, "got", resp.Code)
+				t.Error(
+					"Expected HTTP code", test.result.Code, "got", resp.Code,
+				)
 			}
 			identity := resp.GetIdentity()
-			if identity == nil { // if no identify no point to check further
-				return
+			if identity == nil {
+				t.Error("Cannot get identify")
 			}
 			if identity.Country != test.result.Country {
 				t.Error("expected country", test.result.Country, "got",
@@ -426,21 +435,27 @@ func TestSign(t *testing.T) {
 					identity.CommonName)
 			}
 			if identity.SerialNumber != test.result.SerialNumber {
-				t.Error("expected personal id", test.result.SerialNumber, "got",
-					identity.SerialNumber)
+				t.Error(
+					"expected personal id",
+					test.result.SerialNumber,
+					"got",
+					identity.SerialNumber,
+				)
 			}
 			_, err := resp.Validate()
 			if err != nil {
 				t.Error("Invalid response", err.Error())
 			}
 
-			// TODO fix certs
-			// certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
-			// Might be problems with ca-certificates
-			// if ok, err := resp.Cert.Verify(certPaths); !ok {
-			// 	t.Error(err)
-			// }
-			// _, _ = resp.Cert.Verify(certPaths)
+			certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
+			if ok, err := resp.Cert.Verify(certPaths); !ok {
+				t.Error(err)
+			}
+
+			certPaths = []string{}
+			if ok, _ := resp.Cert.Verify(certPaths); ok {
+				t.Error("Should not have any certs")
+			}
 		})
 	}
 }
@@ -523,9 +538,24 @@ func TestSignExtended(t *testing.T) {
 	}
 
 	identity := resp.GetIdentity()
-	fmt.Println("Name:", identity.CommonName)
-	fmt.Println("Personal ID:", identity.SerialNumber)
-	fmt.Println("Country:", identity.Country)
+
+	exp := "TESTNUMBER,OK"
+	got := identity.CommonName
+	if exp != got {
+		t.Errorf("Expected %v got %v\n", exp, got)
+	}
+
+	exp = "PNOEE-30303039914"
+	got = identity.SerialNumber
+	if exp != got {
+		t.Errorf("Expected %v got %v\n", exp, got)
+	}
+
+	exp = "EE"
+	got = identity.Country
+	if exp != got {
+		t.Errorf("Expected %v got %v\n", exp, got)
+	}
 }
 
 func TestNewClient(t *testing.T) {
@@ -544,8 +574,12 @@ func TestNewClient(t *testing.T) {
 	t.Run("specify http client", func(t *testing.T) {
 		t.Parallel()
 
-		httpClient := new(http.Client)
-		client := NewClient("https://sid.demo.sk.ee/smart-id-rp/v2/", 10000, WithHttpClient(httpClient))
+		httpClient := new(http.Client) // ???
+		client := NewClient(
+			"https://sid.demo.sk.ee/smart-id-rp/v2/",
+			10000,
+			WithHttpClient(httpClient),
+		)
 
 		if client.httpClient != httpClient {
 			t.Error("httpClient is not specified")

@@ -42,9 +42,9 @@
 //	//
 //	// sudo apt-get install ca-certificates
 //	// sudo dnf install ca-certificates
-//	certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
-//	if ok, err := resp.Cert.Verify(certPaths); !ok {
-//	 	log.Fatalln(err)
+//	certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
+//	 if ok, err := resp.Cert.Verify(certPaths); !ok {
+//		t.Error(err)
 //	}
 //
 //	identity := resp.GetIdentity()
@@ -105,9 +105,9 @@
 //	//
 //	// sudo apt-get install ca-certificates
 //	// sudo dnf install ca-certificates
-//	certPaths := []string{"./certs/sid_demo_sk_ee_2022_PEM.crt"}
-//	if ok, err := resp.Cert.Verify(certPaths); !ok {
-//		log.Fatalln(err)
+//	certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
+//	 if ok, err := resp.Cert.Verify(certPaths); !ok {
+//		t.Error(err)
 //	}
 //
 //	identity := resp.GetIdentity()

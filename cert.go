@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"errors"
 	"io/ioutil"
 	"time"
 )
@@ -22,6 +23,12 @@ const (
 const (
 	certBegin = "-----BEGIN CERTIFICATE-----\n"
 	certEnd   = "\n-----END CERTIFICATE-----"
+)
+
+var (
+	// ErrCertNoCertGiven error when no certificates used in Verify()
+	// function.
+	ErrCertNoCertGiven = errors.New("No certs given")
 )
 
 // Cert represents certificate from session response.
@@ -54,8 +61,10 @@ func (c *Cert) IsSameLevel(lvl string) bool {
 }
 
 // Verify certificate by file system paths.
-// TODO: check more carefully.
 func (c *Cert) Verify(paths []string) (bool, error) {
+	if len(paths) == 0 {
+		return false, ErrCertNoCertGiven
+	}
 	roots := x509.NewCertPool()
 
 	for _, path := range paths {
@@ -68,6 +77,9 @@ func (c *Cert) Verify(paths []string) (bool, error) {
 
 	opts := x509.VerifyOptions{
 		Roots: roots,
+		// NOTE SK generated cert have incompatible keys.
+		// NOTE Maybe need to change this behaviour.
+		KeyUsages: []x509.ExtKeyUsage{x509.ExtKeyUsageAny},
 	}
 
 	if _, err := c.x509Cert.Verify(opts); err != nil {
