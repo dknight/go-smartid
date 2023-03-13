@@ -574,11 +574,11 @@ func TestNewClient(t *testing.T) {
 	t.Run("specify http client", func(t *testing.T) {
 		t.Parallel()
 
-		httpClient := new(http.Client) // ???
+		httpClient := &http.Client{}
 		client := NewClient(
 			"https://sid.demo.sk.ee/smart-id-rp/v2/",
 			10000,
-			WithHttpClient(httpClient),
+			WithHTTPClient(httpClient),
 		)
 
 		if client.httpClient != httpClient {

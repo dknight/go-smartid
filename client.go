@@ -38,8 +38,8 @@ type optionFunc func(*Client)
 
 func (o optionFunc) apply(c *Client) { o(c) }
 
-// WithHttpClient specifies which http client to use.
-func WithHttpClient(httpClient *http.Client) Option {
+// WithHTTPClient specifies which http client to use.
+func WithHTTPClient(httpClient *http.Client) Option {
 	return optionFunc(func(c *Client) { c.httpClient = httpClient })
 }
 
