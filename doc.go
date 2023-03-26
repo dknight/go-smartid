@@ -44,7 +44,7 @@
 //	// sudo dnf install ca-certificates
 //	certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
 //	 if ok, err := resp.Cert.Verify(certPaths); !ok {
-//		t.Error(err)
+//		log.Fatalln(err)
 //	}
 //
 //	identity := resp.GetIdentity()
@@ -107,7 +107,7 @@
 //	// sudo dnf install ca-certificates
 //	certPaths := []string{"./certs/TEST_of_EID-SK_2016.pem.crt"}
 //	 if ok, err := resp.Cert.Verify(certPaths); !ok {
-//		t.Error(err)
+//		log.Fatalln(err)
 //	}
 //
 //	identity := resp.GetIdentity()
