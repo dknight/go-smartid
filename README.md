@@ -2,7 +2,7 @@
 
 # Smart ID Go Library
 
-[![Tests](ttps://github.com/dknight/go-smartid/actions/workflows/tests.yml/badge.svg))](https://github.com/dknight/go-smartid/actions/workflows/tests.yml/badge.svg)
+[![Tests](https://github.com/dknight/go-smartid/actions/workflows/tests.yml/badge.svg)](https://github.com/dknight/go-smartid/actions/workflows/tests.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dknight/go-smartid)](https://goreportcard.com/report/github.com/dknight/go-smartid)
 [![Go Reference](https://pkg.go.dev/badge/github.com/dknight/go-smartid.svg)](https://pkg.go.dev/github.com/dknight/go-smartid)
 
