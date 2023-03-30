@@ -9,7 +9,7 @@ type semIDTestPair struct {
 
 func TestSemanticIdentifier_String(t *testing.T) {
 	testdata := []semIDTestPair{
-		semIDTestPair{
+		{
 			SemanticIdentifier{
 				Type:    IdentifierTypePNO,
 				Country: CountryEE,
@@ -17,7 +17,7 @@ func TestSemanticIdentifier_String(t *testing.T) {
 			},
 			"PNOEE-30303039914",
 		},
-		semIDTestPair{
+		{
 			SemanticIdentifier{
 				Type:    IdentifierTypeIDC,
 				Country: CountryLV,
@@ -25,7 +25,7 @@ func TestSemanticIdentifier_String(t *testing.T) {
 			},
 			"IDCLV-030303-10012",
 		},
-		semIDTestPair{
+		{
 			SemanticIdentifier{
 				Type:    IdentifierTypePAS,
 				Country: CountryKZ,
