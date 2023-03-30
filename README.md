@@ -1,6 +1,8 @@
 ![Smart-ID in Go language](https://github.com/dknight/go-smartid/blob/main/files/smartid-gopher.png?raw=true)
 
-# Intro
+# Smart ID Go Library
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/dknight/go-smartid)](https://goreportcard.com/report/github.com/dknight/go-smartid)
 
 Package smartid implements an interface in Go to work with the
 Smart-ID API (https://www.smart-id.com). Smart-ID is used to easily and
