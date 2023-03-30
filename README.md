@@ -2,6 +2,7 @@
 
 # Smart ID Go Library
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/dknight/go-smartid.svg)](https://pkg.go.dev/github.com/dknight/go-smartid)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dknight/go-smartid)](https://goreportcard.com/report/github.com/dknight/go-smartid)
 
 Package smartid implements an interface in Go to work with the
